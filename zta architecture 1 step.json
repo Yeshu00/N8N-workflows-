@@ -1,0 +1,331 @@
+{
+  "name": "4th project",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://kodryx.ai",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "responseFormat": "text",
+              "outputPropertyName": "headers"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "80db6cce-5bec-4106-8d31-42f8763581c1",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "60b91924-9b18-43a4-bfae-56a8e32bffa8",
+              "leftValue": "=const linkHeader = $json[\"headers\"][\"link\"] || \"\";\n\n// Simple check: does the link header contain '<https://' anywhere?\nconst containsHttpsInAngleBrackets = linkHeader.includes(\"<https://\");\n\nreturn [\n  {\n    json: {\n      containsHttpsInAngleBrackets\n    }\n  }\n];",
+              "rightValue": "<https://",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "f334ddb3-df22-49df-b3e2-5e7b963a0fc1",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "jsCode": "const headers = $('HTTP Request').item.json.headers;\nconst status = Object.values(headers).some(value =>\n  typeof value === \"string\" && value.includes(\"https\")\n);\n\n// Assuming the input JSON has a 'link' field at the root level\nconst domain = $input.first().json.headers.link;\n\nreturn [\n  {\n    json: {\n      domain,\n      status\n    }\n  }\n]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        -96
+      ],
+      "id": "6655777d-e0ce-484d-a251-1e7050317673",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "jsCode": "const headers = $('HTTP Request').item.json.headers;\nconst containsHttps = Object.values(headers).some(value =>\n  typeof value === \"string\" && value.includes(\"https\")\n);\n\n// Check if headers do NOT contain https\nconst status = !containsHttps;\nconst domain = $input.first().json.headers.link;\n\nreturn [\n  {\n    json: { domain,\n      status\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        96
+      ],
+      "id": "575faa3a-30bf-4c98-b7e8-839e00528cf1",
+      "name": "Code1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8b94f94c-2d5d-4935-98f5-38dae129f60c",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1CuAfckTK1k_uZkNmYXNe1otSlGE7ZjM8ULN_ybx9l0U",
+          "mode": "list",
+          "cachedResultName": "zta first check",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1CuAfckTK1k_uZkNmYXNe1otSlGE7ZjM8ULN_ybx9l0U/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1CuAfckTK1k_uZkNmYXNe1otSlGE7ZjM8ULN_ybx9l0U/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "domain": "= {{ $json.domain }}",
+            "status": "= {{ $json.status }}"
+          },
+          "matchingColumns": [
+            "domain"
+          ],
+          "schema": [
+            {
+              "id": "domain",
+              "displayName": "domain",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        896,
+        -96
+      ],
+      "id": "a2e2ae92-3050-4ca1-bd7f-5fac33db1f05",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ksIf1FztgkwHHgUC",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1CuAfckTK1k_uZkNmYXNe1otSlGE7ZjM8ULN_ybx9l0U",
+          "mode": "list",
+          "cachedResultName": "zta first check",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1CuAfckTK1k_uZkNmYXNe1otSlGE7ZjM8ULN_ybx9l0U/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1CuAfckTK1k_uZkNmYXNe1otSlGE7ZjM8ULN_ybx9l0U/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "domain": "= {{ $json.domain }}",
+            "status": "= {{ $json.status }}"
+          },
+          "matchingColumns": [
+            "domain"
+          ],
+          "schema": [
+            {
+              "id": "domain",
+              "displayName": "domain",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        800,
+        96
+      ],
+      "id": "75d864ff-d643-4d4a-8d07-0bc52e2c7130",
+      "name": "Append row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ksIf1FztgkwHHgUC",
+          "name": "Google Sheets account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "5149d5a6-075a-400e-bca6-4948c358b81c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9a5798e09499f4b6d2e1e1667afde175690369632e497058b690004d05149f36"
+  },
+  "id": "Zi7u8KhwZKjKc7rt",
+  "tags": []
+}
