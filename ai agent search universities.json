@@ -1,0 +1,166 @@
+{
+  "name": "ai agent search universities",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "university-info",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "da072600-f64e-4fe5-89a6-ca9eec59c7b4",
+      "webhookId": "c710eb22-9281-4889-92a9-e4f5ffa05226"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.content }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        800,
+        0
+      ],
+      "id": "ab1aff3e-71c3-4aa7-86dd-e96156c56cb1",
+      "alwaysOutputData": false,
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f673b407-6c57-45f0-951e-5517c4179789",
+              "name": "query",
+              "value": "={{ $json.query }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "f17b5866-6159-441b-8c7a-43c7b3889939",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "= give me Universities based on given information.{{ $json.query.country }},{{ $json.query.course }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        352,
+        -16
+      ],
+      "id": "f47d9075-f4d4-44cd-97a9-a44f21868485",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "J6OaKv7IoLhX0qpS",
+          "name": "OpenAi account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "// items is the input array available in n8n Function node\n// Extract content from the first item's message object\nconst content = items[0]?.json?.message?.content || '';\n\n// Return content as JSON in the output format n8n expects\nreturn [{ json: { content } }];"
+      },
+      "name": "Format Response",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        640,
+        112
+      ],
+      "id": "40657f3f-3025-4bbb-af67-f1d2525db0cb"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Format Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f8097129-cc59-4be2-85e3-7b0c1150002f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9a5798e09499f4b6d2e1e1667afde175690369632e497058b690004d05149f36"
+  },
+  "id": "QqX4db6aS4M2LQVY",
+  "tags": []
+}
