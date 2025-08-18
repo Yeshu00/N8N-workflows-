@@ -1,0 +1,144 @@
+{
+  "name": "1 st project",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtHour": 13
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -240,
+        0
+      ],
+      "id": "b490ffa0-72be-41c4-bfd4-fb027bc6d0bd",
+      "name": "Schedule Trigger",
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "14Re4rUz57ssVpQQLz_PFFNl8_yDmKnqsniypSo03wkM",
+          "mode": "list",
+          "cachedResultName": "attendance",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14Re4rUz57ssVpQQLz_PFFNl8_yDmKnqsniypSo03wkM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 887157955,
+          "mode": "list",
+          "cachedResultName": "team members",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14Re4rUz57ssVpQQLz_PFFNl8_yDmKnqsniypSo03wkM/edit#gid=887157955"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -32,
+        0
+      ],
+      "id": "8710e170-9ec0-4bb9-a9a4-37f9a8c2179b",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ksIf1FztgkwHHgUC",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.json.myNewField = 1;\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        176,
+        0
+      ],
+      "id": "ef2e3f0f-fdbe-4f7e-bb2c-791f02db885b",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.mail }}",
+        "subject": "Meeting timing",
+        "message": "we have meeting tomorrow morning 9AM",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        368,
+        0
+      ],
+      "id": "a1280fe5-0621-48c8-ae8f-9ccf3491763c",
+      "name": "Send a message",
+      "webhookId": "42c6f400-3617-4420-933c-1d8306c4765f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "KltOabzyRLDhCGYo",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "dccb62fd-a533-4308-ab30-e57c7ea9335a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9a5798e09499f4b6d2e1e1667afde175690369632e497058b690004d05149f36"
+  },
+  "id": "mnS0Zb4sg8YZJcTV",
+  "tags": []
+}
