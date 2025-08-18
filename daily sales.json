@@ -1,0 +1,140 @@
+{
+  "name": "2 nd project",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 1
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -96,
+        0
+      ],
+      "id": "c63cddac-0753-4c5d-b02b-487c6cfd7e14",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1eT6DTU9f8FUDSznA1QyLVFD-DRaBjLibjmHm6pvpLho",
+          "mode": "list",
+          "cachedResultName": "store sales",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eT6DTU9f8FUDSznA1QyLVFD-DRaBjLibjmHm6pvpLho/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eT6DTU9f8FUDSznA1QyLVFD-DRaBjLibjmHm6pvpLho/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        208,
+        0
+      ],
+      "id": "a3c2bbfd-9a64-4715-8423-5403eddabdff",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ksIf1FztgkwHHgUC",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst totalPrice = items.reduce(\n  (total, item) => total + item?.json[\"price \"],\n  0,\n);\nreturn { totalPrice };\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "f73447bd-8a1e-4d0d-a0f1-9e977befe4d1",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "sendTo": "konduruyeshwantraju123@gmail.com",
+        "subject": "Daily Sales Report",
+        "message": "=Hello,  Your total sales for the last 24 hours is: {{ $json.totalPrice }} rupees Regards,   Automated Sales Bot",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        624,
+        0
+      ],
+      "id": "f9ca9703-65fd-44d2-afd4-bc6b22641ea2",
+      "name": "Send a message",
+      "webhookId": "2f7cfd74-9646-45d7-9b8a-fdfe4db32c06",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "KltOabzyRLDhCGYo",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "7bd55b5e-fa03-49e8-8abc-3f55f29b6c24",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9a5798e09499f4b6d2e1e1667afde175690369632e497058b690004d05149f36"
+  },
+  "id": "tOgGAAHEPy5OQyIU",
+  "tags": []
+}
