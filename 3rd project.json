@@ -1,0 +1,152 @@
+{
+  "name": "3rd project",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9,
+              "triggerAtMinute": 30
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7bd9ceab-df7d-4d8b-b72d-dfbe1ae67b3f",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "14Re4rUz57ssVpQQLz_PFFNl8_yDmKnqsniypSo03wkM",
+          "mode": "list",
+          "cachedResultName": "attendance",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14Re4rUz57ssVpQQLz_PFFNl8_yDmKnqsniypSo03wkM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "attendance",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14Re4rUz57ssVpQQLz_PFFNl8_yDmKnqsniypSo03wkM/edit#gid=0"
+        },
+        "options": {
+          "outputFormatting": {
+            "values": {
+              "general": "UNFORMATTED_VALUE",
+              "date": "FORMATTED_STRING"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        208,
+        0
+      ],
+      "id": "962ce01b-4d9b-47ee-aec9-60eb0b21ee64",
+      "name": "Get row(s) in sheet",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ksIf1FztgkwHHgUC",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const students = $input.all();\nconst absentStudents = students.filter(\n  (student) => student?.json?.status === \"absent\",\n);\nconst mailList = absentStudents.map((student) => student?.json[\"parent mail\"]);\n\nreturn { mailList };\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "356615e6-fc60-456a-87bb-f6667a9adfb8",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "sendTo": "konduruyeshwant@gmail.com",
+        "subject": "Student status",
+        "emailType": "text",
+        "message": "=Dear Parent,  Your child {{ $json.name }} is absent today.  Regards,   School Administration",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        624,
+        0
+      ],
+      "id": "5d7ab89d-5078-4745-8e2e-7632bd0c738a",
+      "name": "Send a message",
+      "webhookId": "beb00260-77d2-471e-a57e-7f27b4078185",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "KltOabzyRLDhCGYo",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4ff1583f-34ca-4d56-937c-24ed2b496a0e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9a5798e09499f4b6d2e1e1667afde175690369632e497058b690004d05149f36"
+  },
+  "id": "NYDX3CAj555W0Vgg",
+  "tags": []
+}
